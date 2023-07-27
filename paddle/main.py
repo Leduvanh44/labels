@@ -18,5 +18,5 @@ digit_31 = roi_bp.crop_image(digit_3, 10, 0, 48, 90)
 digit_32 = roi_bp.crop_image(digit_3, 48, 0, 96, 90)
 digit1 = read_num_roi.read_num_roi(digit_31)
 digit2 = read_num_roi.read_num_roi(digit_32)
-num_roi_3 = digit1[0] * 10 + digit2
+num_roi_3 = digit1[0] * 10 + digit2[0]
 print(num_roi_1, num_roi_2, num_roi_3)
