@@ -17,10 +17,32 @@ def find_closest_tuple(target_list, tuple_list):
             closest_tuple = tuple_item
             closest_distance = distance
     return closest_tuple
+    
+def replace_tuple_if_not_present(target_tuple, tuple_list):
+    try:
+        index = tuple_list.index(target_tuple)
+    except ValueError:
+        closest_tuple = find_closest_tuple(target_tuple, tuple_list)
+        index = tuple_list.index(closest_tuple)
+    tuple_list[index] = target_tuple
 
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 CYAN = (255, 255, 0)
+DIGITSDICT_tuple = [
+    (1, 1, 1, 1, 1, 1, 0),
+    (0, 1, 1, 0, 0, 0, 0),
+    (1, 1, 0, 1, 1, 0, 1),
+    (1, 1, 1, 1, 0, 0, 1),
+    (0, 1, 1, 0, 0, 1, 1),
+    (1, 1, 1, 0, 0, 1, 1),
+    (1, 0, 1, 1, 0, 1, 1),
+    (1, 0, 1, 1, 1, 1, 1),
+    (1, 1, 1, 0, 0, 0, 0),
+    (1, 1, 1, 1, 1, 1, 1),
+    (1, 1, 1, 1, 0, 1, 1),
+    (0, 1, 1, 1, 1, 0, 1),
+]
 DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 0): 0,
     (0, 1, 1, 0, 0, 0, 0): 1,
@@ -45,31 +67,31 @@ def read_num(roi_path):
     roi = cv2.bilateralFilter(roi, 5, 30, 60)
     trimmed = roi[int(RATIO):, int(RATIO): roi.shape[1] - int(RATIO)]
     roi_color = roi_color[int(RATIO):, int(RATIO): roi.shape[1] - int(RATIO)]
-    # cv2.imshow("Blurred and Trimmed", trimmed)
-    # cv2.waitKey(0)
+    cv2.imshow("Blurred and Trimmed", trimmed)
+    cv2.waitKey(0)
 
     edged = cv2.adaptiveThreshold(
         trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 9, 3
     )
-    # cv2.imshow("Edged", edged)
-    # cv2.waitKey(0)
+    cv2.imshow("Edged", edged)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
     dilated = cv2.dilate(edged, kernel, iterations=1)
-    # cv2.imshow("Dilated", dilated)
-    # cv2.waitKey(0)
+    cv2.imshow("Dilated", dilated)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 1))
     dilated = cv2.dilate(dilated, kernel, iterations=1)
 
-    # cv2.imshow("Dilated x2", dilated)
-    # cv2.waitKey(0)
+    cv2.imshow("Dilated x2", dilated)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 1), )
     eroded = cv2.erode(dilated, kernel, iterations=1)
 
-    # cv2.imshow("Eroded", eroded)
-    # cv2.waitKey(0)
+    cv2.imshow("Eroded", eroded)
+    cv2.waitKey(0)
 
     cnts, _ = cv2.findContours(eroded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     digits_cnts = []
@@ -97,8 +119,8 @@ def read_num(roi_path):
         (x, y, w, h) = cv2.boundingRect(cnt)
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
-    # cv2.imshow("All Contours sorted", canvas)
-    # cv2.waitKey(0)
+    cv2.imshow("All Contours sorted", canvas)
+    cv2.waitKey(0)
     digits = []
     canvas = roi_color.copy()
     for cnt in sorted_digits:
@@ -142,8 +164,8 @@ def read_num(roi_path):
         digits += [digit]
         cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
         cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
-        # cv2.imshow("Digit", canvas)
-        # cv2.waitKey(0)
+        cv2.imshow("Digit", canvas)
+        cv2.waitKey(0)
 
     print(f"Digits in img are: {digits}")
     return digits
@@ -156,31 +178,31 @@ def read_num_roi(roi_color):
     roi = cv2.bilateralFilter(roi, 5, 30, 60)
     trimmed = roi[int(RATIO):, int(RATIO): roi.shape[1] - int(RATIO)]
     roi_color = roi_color[int(RATIO):, int(RATIO): roi.shape[1] - int(RATIO)]
-    # cv2.imshow("Blurred and Trimmed", trimmed)
-    # cv2.waitKey(0)
+    cv2.imshow("Blurred and Trimmed", trimmed)
+    cv2.waitKey(0)
 
     edged = cv2.adaptiveThreshold(
         trimmed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 9, 3.5
     )
-    # cv2.imshow("Edged", edged)
-    # cv2.waitKey(0)
+    cv2.imshow("Edged", edged)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
     dilated = cv2.dilate(edged, kernel, iterations=1)
-    # cv2.imshow("Dilated", dilated)
-    # cv2.waitKey(0)
+    cv2.imshow("Dilated", dilated)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 1))
     dilated = cv2.dilate(dilated, kernel, iterations=1)
 
-    # cv2.imshow("Dilated x2", dilated)
-    # cv2.waitKey(0)
+    cv2.imshow("Dilated x2", dilated)
+    cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 1), )
     eroded = cv2.erode(dilated, kernel, iterations=1)
 
-    # cv2.imshow("Eroded", eroded)
-    # cv2.waitKey(0)
+    cv2.imshow("Eroded", eroded)
+    cv2.waitKey(0)
 
     cnts, _ = cv2.findContours(eroded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     digits_cnts = []
@@ -208,8 +230,8 @@ def read_num_roi(roi_color):
         (x, y, w, h) = cv2.boundingRect(cnt)
         cv2.rectangle(canvas, (x, y), (x + w, y + h), (0, 0, 0), 1)
         cv2.putText(canvas, str(i), (x, y - 3), FONT, 0.3, (0, 0, 0), 1)
-    # cv2.imshow("All Contours sorted", canvas)
-    # cv2.waitKey(0)
+    cv2.imshow("All Contours sorted", canvas)
+    cv2.waitKey(0)
     digits = []
     canvas = roi_color.copy()
     for cnt in sorted_digits:
@@ -243,9 +265,11 @@ def read_num_roi(roi_color):
             if np.sum(region == 255) > region.size * 0.5:
                 on[i] = 1
             print(f"State of ON: {on}")
-
+        if on not in DIGITSDICT_tuple:
+            closest_tuple = find_closest_tuple(on, DIGITSDICT_tuple)
+            index = DIGITSDICT_tuple.index(closest_tuple)
+            on = DIGITSDICT_tuple[index]
         digit = DIGITSDICT[tuple(on)]
-
         if digit == 2:
             if w < 50:
                 digit = 1
@@ -253,8 +277,8 @@ def read_num_roi(roi_color):
         digits += [digit]
         cv2.rectangle(canvas, (x, y), (x + w, y + h), CYAN, 1)
         cv2.putText(canvas, str(digit), (x - 5, y + 6), FONT, 0.3, (0, 0, 0), 1)
-        # cv2.imshow("Digit", canvas)
-        # cv2.waitKey(0)
+        cv2.imshow("Digit", canvas)
+        cv2.waitKey(0)
 
     print(f"Digits in img are: {digits}")
     return digits
