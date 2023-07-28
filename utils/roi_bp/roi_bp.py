@@ -35,7 +35,7 @@ def reduce_blur(pil_image, sigma):
     blurred_array = gaussian_filter(img_array, sigma=sigma)
     blurred_pil_image = Image.fromarray(blurred_array.astype('uint8'))
     return blurred_pil_image
-def roi_blood_pressure(img_path):
+def roi_blood_pressure(img_path, canny=100):
     peri_pre = 0
     x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur = 0, 0, 0, 0, 0, 0
     img_color = cv2.imread(img_path)
@@ -45,7 +45,7 @@ def roi_blood_pressure(img_path):
 
     blurred = cv2.GaussianBlur(img, (5, 5), 0)
     blurred = cv2.bilateralFilter(blurred, 5, sigmaColor=50, sigmaSpace=50)
-    edged = cv2.Canny(blurred, 130, 150, 255)
+    edged = cv2.Canny(blurred, canny, 150, 255)
 
     cnts, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:100]
@@ -76,18 +76,19 @@ def roi_blood_pressure(img_path):
 
     roi_path = image_name + '-roi.png'
     cv2.imwrite(f'inter/{roi_path}', roi)
-    roi_1 = crop_image(roi, 100, 25, 287, 135)
-    roi_2 = crop_image(roi, 128, 157, 285, 286)
-    roi_3 = crop_image(roi, 190, 286, 286, 376)
+    # roi_1 = crop_image(roi, 100, 25, 287, 135)
+    # roi_2 = crop_image(roi, 128, 157, 285, 286)
+    # roi_3 = crop_image(roi, 190, 286, 286, 376)
     # cv2.imshow('roi_1', roi_1)
     # cv2.imshow('roi_2', roi_2)
     # cv2.imshow('roi_3', roi_3)
     # cv2.waitKey(0)
 
-    cv2.imwrite(f'roi_num/{image_name}_roi1.png', roi_1)
-    cv2.imwrite(f'roi_num/{image_name}_roi2.png', roi_2)
-    cv2.imwrite(f'roi_num/{image_name}_roi3.png', roi_3)
+    # cv2.imwrite(f'roi_num/{image_name}_roi1.png', roi_1)
+    # cv2.imwrite(f'roi_num/{image_name}_roi2.png', roi_2)
+    # cv2.imwrite(f'roi_num/{image_name}_roi3.png', roi_3)
     return roi
+
 
 
 

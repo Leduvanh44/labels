@@ -6,33 +6,64 @@ import os
 from flask import Flask,jsonify,request
 import werkzeug
 
-def read_number (path):
-    image_path = path
+from utils.read_num_roi import read_num_roi
+from utils.roi_bp import roi_bp
+import cv2
+import os
+from flask import Flask,jsonify,request
+import werkzeug
+def read_number(image_path):
     image_name_with_extension = os.path.basename(image_path)
     image_name = os.path.splitext(image_name_with_extension)[0]
-    roi = cv2.imread(path)
-    roi = cv2.resize(roi, (296, 385))
+
+    roi = roi_bp.roi_blood_pressure(image_path, canny=85)
     cv2.imshow('roi', roi)
-    roi_1 = roi_bp.crop_image(roi, 100, 25, 287, 135)
-    roi_2 = roi_bp.crop_image(roi, 128, 157, 285, 286)
-    roi_3 = roi_bp.crop_image(roi, 190, 286, 286, 376)
-    cv2.imwrite(f'roi_num/{image_name}_roi1.png', roi_1)
-    cv2.imwrite(f'roi_num/{image_name}_roi2.png', roi_2)
-    cv2.imwrite(f'roi_num/{image_name}_roi3.png', roi_3)
-   # roi = roi_bp.roi_blood_pressure(image_path)
-    digit = read_num_roi.read_num_roi(roi_1)
-    num_roi_1 = digit[0] * 100 + digit[1] * 10 + digit[2]
-    digit = read_num_roi.read_num_roi(roi_2)
-    num_roi_2 = digit[0] * 10 + digit[1]
+    cv2.waitKey(0)
+    # roi_1 = roi_bp.crop_image(roi, 100, 21, 287, 135)
+    # roi_2 = roi_bp.crop_image(roi, 100, 157, 285, 286)
+    # roi_3 = roi_bp.crop_image(roi, 190, 286, 286, 376)
+    # cv2.imshow('roi_1', roi_1)
+    # cv2.imshow('roi_2', roi_2)
+    # cv2.imshow('roi_3', roi_3)
+    # cv2.waitKey(0)
+    #
+    # cv2.imwrite(f'roi_num/{image_name}_roi1.png', roi_1)
+    # cv2.imwrite(f'roi_num/{image_name}_roi2.png', roi_2)
+    # cv2.imwrite(f'roi_num/{image_name}_roi3.png', roi_3)
+
+    # digit = read_num_roi.read_num(f'roi_num/{image_name}_roi1.png')
+    digit = roi
+    digit1_png = roi_bp.crop_image(digit, 100, 21, 153, 134)
+    digit2_png = roi_bp.crop_image(digit, 153, 20, 218, 134)
+    digit3_png = roi_bp.crop_image(digit, 219, 20, 283.5, 134)
+
+    digit1 = read_num_roi.read_num_roi(digit1_png, True)
+    digit2 = read_num_roi.read_num_roi(digit2_png)
+    digit3 = read_num_roi.read_num_roi(digit3_png)
+    num_roi_1 = digit1[0] * 100 + digit2[0] * 10 + digit3[0]
+
+    # digit = read_num_roi.read_num(f'roi_num/{image_name}_roi2.png')
+    digit1_png = roi_bp.crop_image(digit, 100, 174, 153, 287)
+    digit2_png = roi_bp.crop_image(digit, 153, 174, 218, 287)
+    digit3_png = roi_bp.crop_image(digit, 219, 174, 283.5, 287)
+    digit1 = read_num_roi.read_num_roi(digit1_png, True)
+    digit2 = read_num_roi.read_num_roi(digit2_png)
+    digit3 = read_num_roi.read_num_roi(digit3_png)
+    num_roi_2 = digit1[0]*100 + digit2[0] * 10 + digit3[0]
+
+
     # digit_3 = cv2.imread(f'roi_num/{image_name}_roi3.png')
-    digit_31 = roi_bp.crop_image(roi_3, 10, 0, 48, 90)
-    digit_32 = roi_bp.crop_image(roi_3, 48, 0, 96, 90)
-    digit1 = read_num_roi.read_num_roi(digit_31)
-    digit2 = read_num_roi.read_num_roi(digit_32)
+    digit1_png = roi_bp.crop_image(digit, 190, 288, 246.8, 375)
+    digit2_png = roi_bp.crop_image(digit, 247, 288, 298, 375)
+    digit1 = read_num_roi.read_num_roi(digit1_png)
+    digit2 = read_num_roi.read_num_roi(digit2_png)
     num_roi_3 = digit1[0] * 10 + digit2[0]
-    print(num_roi_1, num_roi_2, num_roi_3)
-    #return [num_roi_1, num_roi_2,num_roi_3]
-read_number('file_img/1690446442238.jpg')
+
+    return [num_roi_1, num_roi_2, num_roi_3]
+
+image_path = 'file_img/64d763b23c9defc3b68c2.jpg'
+num = read_number(image_path)
+print(num)
 
 # app = Flask(__name__) #intance of our flask application 
 

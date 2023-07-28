@@ -7,13 +7,13 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 peri_pre = 0
 x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur= 0, 0, 0, 0, 0, 0
-img_color = cv2.imread("file_img/a602e994a78f74d12d9e7.jpg")
+img_color = cv2.imread("file_img/1690446442238.jpg")
 img_color = cv2.resize(img_color, (480, 640))
 img = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
 
 blurred = cv2.GaussianBlur(img, (5, 5), 0)
 blurred = cv2.bilateralFilter(blurred, 5, sigmaColor=50, sigmaSpace=50)
-edged = cv2.Canny(blurred, 130, 150, 255)
+edged = cv2.Canny(blurred, 85, 150, 255)
 
 cv2.imshow("Outline of device", edged)
 cv2.waitKey(0)
