@@ -61,7 +61,7 @@ def read_number(image_path):
 
     return [num_roi_1, num_roi_2, num_roi_3]
 
-image_path = 'file_img/64d763b23c9defc3b68c2.jpg'
+image_path = 'file_img/65da44c622fef1a0a8ef.jpg'
 num = read_number(image_path)
 print(num)
 

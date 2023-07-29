@@ -172,7 +172,7 @@ def read_num_roi(roi_color, num_roi=False, ratio=0.001):
             on = DIGITSDICT_tuple[index]
         digit = DIGITSDICT[tuple(on)]
         if digit == 2:
-            if w < 50:
+            if w < 70:
                 digit = 1
         if num_roi == True:
             if w < 20:
