@@ -7,7 +7,7 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 peri_pre = 0
 x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur= 0, 0, 0, 0, 0, 0
-img_color = cv2.imread("file_img/1690446442238.jpg")
+img_color = cv2.imread("original_img_file/1690446442238.jpg")
 img_color = cv2.resize(img_color, (480, 640))
 img = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
 

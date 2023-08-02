@@ -138,7 +138,7 @@ def read_num_roi(roi_color, num_roi=False, ratio=0.001):
     for cnt in sorted_digits:
         (x, y, w, h) = cv2.boundingRect(cnt)
         roi = eroded[y: y + h, x: x + w]
-        print(f"W:{w}, H:{h}")
+        # print(f"W:{w}, H:{h}")
         # convenience units
         qW, qH = int(w * 0.25), int(h * 0.15)
         fractionH, halfH, fractionW = int(h * 0.05), int(h * 0.5), int(w * 0.25)
@@ -186,7 +186,7 @@ def read_num_roi(roi_color, num_roi=False, ratio=0.001):
         # cv2.imshow("Digit", canvas)
         # cv2.waitKey(0)
 
-    print(f"Digits in img are: {digits}")
+    # print(f"Digits in img are: {digits}")
     if len(digits) == 0:
         digits = [0]
     return digits
