@@ -35,6 +35,8 @@ def reduce_blur(pil_image, sigma):
     blurred_array = gaussian_filter(img_array, sigma=sigma)
     blurred_pil_image = Image.fromarray(blurred_array.astype('uint8'))
     return blurred_pil_image
+
+
 def roi_blood_pressure(img_path):
     peri_pre = 0
     x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur = 0, 0, 0, 0, 0, 0

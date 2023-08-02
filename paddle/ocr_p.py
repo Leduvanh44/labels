@@ -31,7 +31,7 @@ def upscale_image(cv_image, scale_factor):
 
 
 # input_image_path = 'inter/58e80d47435c9002c94d6-roi.png'
-input_image_path = 'roi_num/58e80d47435c9002c94d6_roi1.png'
+input_image_path = 'file_img_2/ad1d008e325ee100b84f11.jpg'
 img = cv2.imread(input_image_path)
 img = upscale_image(img, 5)
 img = cv2.resize(img, None, None, fx=0.3, fy=0.3)
