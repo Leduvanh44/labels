@@ -52,7 +52,6 @@ def roi_blood_pressure(img_path, canny=100):
     cv2.drawContours(img_color, cnts, 0, PURPLE, THICKNESS)
     for i in range(len(cnts)):
         cv2.drawContours(img_color, cnts, i, PURPLE, THICKNESS)
-        # print(f"ContourArea:{cv2.contourArea(cnts[i])}")
         x, y, w, h = cv2.boundingRect(cnts[i])
         cv2.rectangle(img_color, (x, y), (x + w, y + h), YELLOW, THICKNESS)
         area = round(cv2.contourArea(cnts[i]), 1)
@@ -60,33 +59,14 @@ def roi_blood_pressure(img_path, canny=100):
         if peri >= peri_pre:
             peri_pre = peri
             x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur = x, y, w, h, area, peri
-        # print(f"ContourArea:{area}, Peri: {peri}")
-        # cv2.putText(img_color, "Area:" + str(area), (x, y - 15), FONT, 0.4, PURPLE, 1)
-        # cv2.putText(img_color, "Perimeter:" + str(peri), (x, y - 5), FONT, 0.4, PURPLE, 1)
-
-    # print(x_cur, y_cur, w_cur, h_cur, area_cur, peri_cur)
     roi = img_color_c[y_cur: y_cur + h_cur, x_cur: x_cur + w_cur]
     roi = cv2.resize(roi, (296, 385))
     roi = pillow_to_cv2(increase_contrast(cv2_to_pillow(roi), 2))
     image_name_with_extension = os.path.basename(img_path)
     image_name, _ = os.path.splitext(image_name_with_extension)
 
-    # cv2.imshow("ROI", roi)
-    # cv2.waitKey(0)
-
     roi_path = image_name + '-roi.png'
     cv2.imwrite(f'inter/{roi_path}', roi)
-    # roi_1 = crop_image(roi, 100, 25, 287, 135)
-    # roi_2 = crop_image(roi, 128, 157, 285, 286)
-    # roi_3 = crop_image(roi, 190, 286, 286, 376)
-    # cv2.imshow('roi_1', roi_1)
-    # cv2.imshow('roi_2', roi_2)
-    # cv2.imshow('roi_3', roi_3)
-    # cv2.waitKey(0)
-
-    # cv2.imwrite(f'roi_num/{image_name}_roi1.png', roi_1)
-    # cv2.imwrite(f'roi_num/{image_name}_roi2.png', roi_2)
-    # cv2.imwrite(f'roi_num/{image_name}_roi3.png', roi_3)
     return roi
 
 

@@ -7,7 +7,8 @@ import os
 ocr = PaddleOCR(lang='en')
 def blood_glucose_meter(input_image_path):
     cv_img = cv2.imread(input_image_path)
-    cv_img = cv2.resize(cv_img, None, None, fx=0.3, fy=0.3)
+    cv_img = cv2.resize(cv_img, (1280, 1280))
+    cv_img = cv2.resize(cv_img, None, None, fx=0.17, fy=0.17)
     blurred = cv2.GaussianBlur(cv_img, (5, 5), 10)
     cv_img = cv2.bilateralFilter(blurred, 10, sigmaColor=50, sigmaSpace=50)
     image_name_with_extension = os.path.basename(input_image_path)
@@ -38,7 +39,8 @@ def blood_glucose_meter(input_image_path):
 
 def temp_meter(input_image_path):
     cv_img = cv2.imread(input_image_path)
-    cv_img = cv2.resize(cv_img, None, None, fx=0.3, fy=0.3)
+    cv_img = cv2.resize(cv_img, (1280, 1280))
+    cv_img = cv2.resize(cv_img, None, None, fx=0.17, fy=0.17)
     cv_img = cv2.GaussianBlur(cv_img, (5, 5), 8)
     cv_img = cv2.bilateralFilter(cv_img, 8, sigmaColor=50, sigmaSpace=50)
     image_name_with_extension = os.path.basename(input_image_path)
