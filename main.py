@@ -37,6 +37,7 @@ def uploadBloodPressureData():
              dia = num[1]
              pulse = num[2]
              print(num)
+             # delete file after giving number in file
              # if os.path.exists(filePath):
              #     os.remove(filePath)
              return jsonify({"message":'Xử lý thành công',
@@ -59,7 +60,7 @@ def uploadTemperatureData():
         try:
              temperature = temp(filePath)
              if temperature == 'Error':
-                 # if os.path.exists(filePath): #xoa file sau khi thao tác xong
+                 # if os.path.exists(filePath):
                  #     os.remove(filePath)
                  return jsonify({"message": 'Lỗi',
                                  })
