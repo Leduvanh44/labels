@@ -4,9 +4,20 @@ from utils.gluco import roi_glu
 from utils.press import roi_press
 from flask import Flask, jsonify, request
 import werkzeug
+import subprocess
 
-# image_path = 'original_img_file/74831ccc43e390bdc9f21.jpg'
-# print(sphygmomanometer(image_path))
+# create vir env
+# subprocess.run(['pip', 'install', 'virtualenv'])
+# venv_name = 'myenv'
+# subprocess.run(['virtualenv', venv_name])
+# requirements_file = 'requirements.txt'
+# activate_command = f'{venv_name}/bin/activate'
+# subprocess.run(activate_command, shell=True)
+# install_command = f'pip install -r {requirements_file}'
+# subprocess.run(install_command, shell=True)
+# deactivate_command = 'deactivate'
+# subprocess.run(deactivate_command, shell=True)
+
 
 
 app = Flask(__name__) 
