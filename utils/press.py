@@ -187,7 +187,7 @@ def edged_img(cv_img, num_position=False, first_num=False):
         sevensegs = [
             ((0, 0), (w, qH)),  # a (top bar)
             ((w - qW, 0), (w, halfH)),  # b (upper right)
-            ((w - qW, halfH), (w, h)),  # c (lower right)
+            ((w - qW - 3, halfH), (w - 3, h)),  # c (lower right)
             ((0, h - qH), (w, h)),  # d (lower bar)
             ((0, halfH), (qW, h)),  # e (lower left)
             ((0, 0), (qW, halfH)),  # f (upper left)
@@ -247,6 +247,7 @@ def roi_3(image_path):
 
 def roi_press(image_path):
     num = []
+    number = []
     digit = roi_blood_pressure(image_path, canny=20, num_canny=100)
     digit1_png = crop_image(digit, 85, 25, 150, 134)
     digit1_png = cv2.resize(digit1_png, None, None, fx=2, fy=1)
@@ -257,6 +258,7 @@ def roi_press(image_path):
     digit3_png = crop_image(digit, 219, 30, 284, 139)
     digit3_png = cv2.resize(digit3_png, None, None, fx=2, fy=1)
     num += [edged_img(digit3_png)]
+    number += [num[0] * 100 + num[1] * 10 + num[2]]
     digit4_png = crop_image(digit, 85, 174, 150, 283)
     digit4_png = cv2.resize(digit4_png, None, None, fx=2, fy=1)
     num += [edged_img(digit4_png, first_num=True)]
@@ -266,14 +268,16 @@ def roi_press(image_path):
     digit6_png = crop_image(digit, 219, 174, 284, 283)
     digit6_png = cv2.resize(digit6_png, None, None, fx=2, fy=1)
     num += [edged_img(digit6_png)]
+    number += [num[0+3] * 100 + num[1+3] * 10 + num[2+3]]
     digit7_png = crop_image(digit, 200, 295, 242, 379)
     digit7_png = cv2.resize(digit7_png, (120, 130))
     num += [edged_img(digit7_png, num_position=True)]
     digit8_png = crop_image(digit, 245, 295, 287, 379)
     digit8_png = cv2.resize(digit8_png, (120, 130))
     num += [edged_img(digit8_png, num_position=True)]
-    print(num)
-    return num
+    number += [num[6] * 10 + num[7]]
+    print(number)
+    return number
 
 if __name__ == '__main__':
     folder_path = 'test_2_img'

@@ -34,7 +34,7 @@ DIGITSDICT = {
 }
 
 
-def edged_img(cv_img, num_position=False, first_num=False):
+def edged_img(cv_img, thresh):
     num_channels = cv_img.shape[2]
     if num_channels > 1:
         try:
@@ -44,7 +44,7 @@ def edged_img(cv_img, num_position=False, first_num=False):
     roi = cv2.GaussianBlur(roi, (5, 5), 1)
     roi = cv2.bilateralFilter(roi, 0, sigmaColor=5, sigmaSpace=50)
     edged = cv2.adaptiveThreshold(
-        roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=2)
+        roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=thresh)
     ##################################################
     # cv2.imshow('edge', edged)
     # while True:
@@ -135,17 +135,23 @@ def edged_img(cv_img, num_position=False, first_num=False):
 def roi_glu(image_path):
     num = []
     digit = roi_blood_pressure(image_path, canny=100, num_canny=100)
+    if os.path.basename(image_path).split('.')[1] == 'true':
+        print('flash on')
+        thresh = 4
+    else:
+        print('flash off')
+        thresh = 2
     image3 = crop_image(digit, 40, 137, 97, 273)
     image3 = cv2.resize(image3, None, None, fx=2.3, fy=1)
-    num += [edged_img(image3)]
+    num += [edged_img(image3, thresh=thresh)]
 
     image2 = crop_image(digit, 120, 137, 177, 273)
     image2 = cv2.resize(image2, None, None, fx=2.3, fy=1)
-    num += [edged_img(image2)]
+    num += [edged_img(image2, thresh=thresh)]
 
     image1 = crop_image(digit, 190, 137, 257, 273)
     image1 = cv2.resize(image1, None, None, fx=2.3, fy=1)
-    num += [edged_img(image1)]
+    num += [edged_img(image1, thresh=thresh)]
     num_str = f'{num[0] * 100 + num[1] * 10 + num[2]}'
     if num_str == '888':
         num_str = '8.8.8'

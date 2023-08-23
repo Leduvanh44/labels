@@ -13,19 +13,21 @@ app = Flask(__name__)
 @app.route ('/blood_pressure', methods=["POST"])
 def uploadBloodPressureData():
     if(request.method =="POST"):
-        imagefile=request.files['image']
-        filename= werkzeug.utils.secure_filename(imagefile.filename)
+        imagefile = request.files['image']
+        flashOn = request.form['flashOn']
+        filename = werkzeug.utils.secure_filename(imagefile.filename)
+        name = os.path.splitext(filename)[0]
+        filename = f'{name}.{flashOn}.jpg'
         imagefile.save("./original_img_file/"+filename)
         filePath = f'original_img_file/{filename}'
-        # sphygmomanometer(filePath)
         try:
              num = roi_press(filePath)
              sys = num[0]
              dia = num[1]
              pulse = num[2]
              print(num)
-             if os.path.exists(filePath):
-                 os.remove(filePath)
+             # if os.path.exists(filePath):
+             #     os.remove(filePath)
              return jsonify({"message":'Xử lý thành công',
                              "sys":sys,"dia":dia,"pulse":pulse
                          })
@@ -38,18 +40,20 @@ def uploadBloodPressureData():
 def uploadTemperatureData():
     if(request.method =="POST"):
         imagefile=request.files['image']
-        filename= werkzeug.utils.secure_filename(imagefile.filename)
+        flashOn = request.form['flashOn']
+        filename = werkzeug.utils.secure_filename(imagefile.filename)
         imagefile.save("./original_img_file/"+filename)
-        filePath = f'original_img_file/{filename}'
-        if os.path.exists(filePath):
-            os.remove(filePath)
+        name = os.path.splitext(filename)[0]
+        filePath = f'original_img_file/{name}.{flashOn}.jpg'
         try:
              temperature = temp(filePath)
              if temperature == 'Error':
+                 # if os.path.exists(filePath): #xoa file sau khi thao tác xong
+                 #     os.remove(filePath)
                  return jsonify({"message": 'Lỗi',
                                  })
-             if os.path.exists(filePath):
-                 os.remove(filePath)
+             # if os.path.exists(filePath):
+             #     os.remove(filePath)
              return jsonify({"message":'Xử lý thành công',
                              "temperature":temperature
                          }) 
@@ -60,14 +64,16 @@ def uploadTemperatureData():
 def uploadBloodGlucoseData():
     if(request.method =="POST"):
         imagefile=request.files['image']
+        flashOn = request.form['flashOn']
         filename= werkzeug.utils.secure_filename(imagefile.filename)
         imagefile.save("./original_img_file/"+filename)
-        filePath = f'original_img_file/{filename}'
+        name = os.path.splitext(filename)[0]
+        filePath = f'original_img_file/{name}.{flashOn}.jpg'
         try:
-             glucose = roi_glu(filePath)
+             glucose, _ = roi_glu(filePath)
              print(glucose)
-             if os.path.exists(filePath):
-                 os.remove(filePath)
+             # if os.path.exists(filePath):
+             #     os.remove(filePath)
              return jsonify({"message":'Xử lý thành công',
                              "glucose":glucose
                          }) 

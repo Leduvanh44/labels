@@ -42,8 +42,14 @@ def temp(image_path):
     roi = cv2.GaussianBlur(cv2.resize(roi, (350, 170)), (5, 5), 1)
     roi = cv2.bilateralFilter(roi, 1, sigmaColor=10, sigmaSpace=75)
     roi = cv2.resize(roi, None, None, fx=2.2, fy=1.5)
-    edged = cv2.adaptiveThreshold(
-        roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=2)
+    if os.path.basename(image_path).split('.')[1] == 'true':
+        print('flash on')
+        edged = cv2.adaptiveThreshold(
+            roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=3)
+    else:
+        print('flash off')
+        edged = cv2.adaptiveThreshold(
+            roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=2)
     contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     filtered_contours = []
     for contour in contours:
