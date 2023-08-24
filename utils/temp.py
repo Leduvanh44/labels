@@ -31,7 +31,7 @@ DIGITSDICT = {
     (1, 1, 1, 1, 1, 1, 1): 8,
     (1, 1, 1, 1, 0, 1, 1): 9,
 }
-def temp(image_path):
+def temp(image_path, flash):
     roi = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     # num_channels = cv_img.shape[2]
     # if num_channels > 1:
@@ -42,7 +42,7 @@ def temp(image_path):
     roi = cv2.GaussianBlur(cv2.resize(roi, (350, 170)), (5, 5), 1)
     roi = cv2.bilateralFilter(roi, 1, sigmaColor=10, sigmaSpace=75)
     roi = cv2.resize(roi, None, None, fx=2.2, fy=1.5)
-    if os.path.basename(image_path).split('.')[1] == 'true':
+    if flash == 'true':
         print('flash on')
         edged = cv2.adaptiveThreshold(
             roi, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 13, C=3)

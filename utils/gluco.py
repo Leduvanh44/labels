@@ -132,10 +132,10 @@ def edged_img(cv_img, thresh):
     return digits[area_max]
 
 
-def roi_glu(image_path):
+def roi_glu(image_path, flash):
     num = []
     digit = roi_blood_pressure(image_path, canny=100, num_canny=100)
-    if os.path.basename(image_path).split('.')[1] == 'true':
+    if flash == 'true':
         print('flash on')
         thresh = 4
     else:

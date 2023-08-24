@@ -24,11 +24,8 @@ app = Flask(__name__)
 @app.route ('/blood_pressure', methods=["POST"])
 def uploadBloodPressureData():
     if(request.method =="POST"):
-        imagefile = request.files['image']
-        flashOn = request.form['flashOn']
-        filename = werkzeug.utils.secure_filename(imagefile.filename)
-        name = os.path.splitext(filename)[0]
-        filename = f'{name}.{flashOn}.jpg'
+        imagefile=request.files['image']
+        filename= werkzeug.utils.secure_filename(imagefile.filename)
         imagefile.save("./original_img_file/"+filename)
         filePath = f'original_img_file/{filename}'
         try:
@@ -53,12 +50,11 @@ def uploadTemperatureData():
     if(request.method =="POST"):
         imagefile=request.files['image']
         flashOn = request.form['flashOn']
-        filename = werkzeug.utils.secure_filename(imagefile.filename)
+        filename= werkzeug.utils.secure_filename(imagefile.filename)
         imagefile.save("./original_img_file/"+filename)
-        name = os.path.splitext(filename)[0]
-        filePath = f'original_img_file/{name}.{flashOn}.jpg'
+        filePath = f'original_img_file/{filename}'
         try:
-             temperature = temp(filePath)
+             temperature = temp(filePath, flash=flashOn)
              if temperature == 'Error':
                  # if os.path.exists(filePath):
                  #     os.remove(filePath)
@@ -79,10 +75,9 @@ def uploadBloodGlucoseData():
         flashOn = request.form['flashOn']
         filename= werkzeug.utils.secure_filename(imagefile.filename)
         imagefile.save("./original_img_file/"+filename)
-        name = os.path.splitext(filename)[0]
-        filePath = f'original_img_file/{name}.{flashOn}.jpg'
+        filePath = f'original_img_file/{filename}'
         try:
-             glucose, _ = roi_glu(filePath)
+             glucose, _ = roi_glu(filePath, flash=flashOn)
              print(glucose)
              # if os.path.exists(filePath):
              #     os.remove(filePath)
