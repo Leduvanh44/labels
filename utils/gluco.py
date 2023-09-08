@@ -136,10 +136,8 @@ def roi_glu(image_path, flash):
     num = []
     digit = roi_blood_pressure(image_path, canny=100, num_canny=100)
     if flash == 'true':
-        print('flash on')
         thresh = 4
     else:
-        print('flash off')
         thresh = 2
     image3 = crop_image(digit, 40, 137, 97, 273)
     image3 = cv2.resize(image3, None, None, fx=2.3, fy=1)

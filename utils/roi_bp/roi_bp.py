@@ -184,8 +184,8 @@ def roi_blood_pressure(img_path, canny=100, num_canny=100, dsize=(480, 640)):
     # cv2.waitKey(0)
     roi = cv2.resize(roi, (296, 385))
     # roi = pillow_to_cv2(increase_contrast(cv2_to_pillow(roi), 1.25)) # có thể gây mất nét khi đọc contour
-    image_name_with_extension = os.path.basename(img_path)
-    image_name, _ = os.path.splitext(image_name_with_extension)
+    # image_name_with_extension = os.path.basename(img_path)
+    # image_name, _ = os.path.splitext(image_name_with_extension)
     # roi_path = image_name + '-roi.png'
     # cv2.imwrite(f'inter/{roi_path}', roi)
     return roi

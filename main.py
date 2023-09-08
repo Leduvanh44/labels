@@ -26,8 +26,8 @@ def uploadBloodPressureData():
     if(request.method =="POST"):
         imagefile=request.files['image']
         filename= werkzeug.utils.secure_filename(imagefile.filename)
-        imagefile.save("./original_img_file/"+filename)
-        filePath = f'original_img_file/{filename}'
+        imagefile.save("./img/"+filename)
+        filePath = f'img/{filename}'
         try:
              num = roi_press(filePath)
              sys = num[0]
@@ -51,8 +51,8 @@ def uploadTemperatureData():
         imagefile=request.files['image']
         flashOn = request.form['flashOn']
         filename= werkzeug.utils.secure_filename(imagefile.filename)
-        imagefile.save("./original_img_file/"+filename)
-        filePath = f'original_img_file/{filename}'
+        imagefile.save("./img/"+filename)
+        filePath = f'img/{filename}'
         try:
              temperature = temp(filePath, flash=flashOn)
              if temperature == 'Error':
