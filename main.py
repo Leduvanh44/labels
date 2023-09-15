@@ -2,6 +2,7 @@ import os
 from utils.temp import temp
 from utils.gluco import roi_glu
 from utils.press import roi_press
+from utils.oxygen import oxygen_meter
 from flask import Flask, jsonify, request
 import werkzeug
 import subprocess
@@ -17,7 +18,6 @@ import subprocess
 # subprocess.run(install_command, shell=True)
 # deactivate_command = 'deactivate'
 # subprocess.run(deactivate_command, shell=True)
-
 
 
 app = Flask(__name__) 
@@ -87,6 +87,25 @@ def uploadBloodGlucoseData():
         except:
             return jsonify({"message":'Lỗi',
                         })       
+
+@app.route ('/oximeter', methods=["POST"])
+def uploadBloodGlucoseData():
+    if(request.method =="POST"):
+        imagefile=request.files['image']
+        filename= werkzeug.utils.secure_filename(imagefile.filename)
+        imagefile.save("./original_img_file/"+filename)
+        filePath = f'original_img_file/{filename}'
+        try:
+             oxi= oxygen_meter(filePath)
+             # if os.path.exists(filePath):
+             #     os.remove(filePath)
+             if oxi != 'error':
+                return jsonify({"message":'Xử lý thành công',"oxygen":oxi})        
+        except:
+            return jsonify({"message":'Lỗi',
+                        })       
+        return jsonify({"message":'Lỗi',
+                        })
 
 if __name__ == "__main__":
     app.run(debug = True,port=4040) #debug will allow changes without shutting down the server
