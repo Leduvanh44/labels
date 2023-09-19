@@ -49,7 +49,8 @@ def histogram(channel, i):
 
 def oxygen_meter(image_path):
     num = []
-    image = cv2.resize(cv2.imread(image_path), (500, 300))
+    image = cv2.imread(image_path)
+    image = cv2.resize(image, (600, 300))
     b, g, r = cv2.split(image)
     threshold_high_old = int(histogram(r, 0))
     threshold_high = int(threshold_high_old + 40)
@@ -66,7 +67,6 @@ def oxygen_meter(image_path):
     # red_channel = image[:, :, 2]
     # threshold_value = 170
     # _, edged = cv2.threshold(red_channel, threshold_value, 255, cv2.THRESH_BINARY)
-    # cv2.imshow('{ave_contours}', edged)
     contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     filters_contours_1 = []
     for contour in contours:
@@ -80,28 +80,61 @@ def oxygen_meter(image_path):
         if x < padding or y < padding or x + w > width - padding or y + h > height - padding:
             continue
         cv2.drawContours(edged, [contour], -1, (255, 255, 255), thickness=cv2.FILLED)
+    # erosion_kernel = np.ones((4, 4), np.uint8)
+    # eroded = cv2.erode(edged, erosion_kernel, iterations=1)
+    # kernel = cv2.getStructuringElement(cv2.MORPH_OPEN, (2, 5))
+    # eroded = cv2.dilate(eroded, kernel, iterations=2)
+    # cv2.imshow('{old}', edged)
+    ###################################################################
 
     contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    total_area = sum(cv2.contourArea(contour) for contour in contours)
-    try:
-        ave_contours = total_area / len(contours)
-    except:
-        ave_contours = 0
-    print('ave_contours:', ave_contours)
-    eroded = edged.copy()
-    if ave_contours == 0:
-        num = ['error']
-        return num
-    elif ave_contours > 10000:
-        pass
-    else:
-        num_kernel = int(11000/ave_contours)
-        kernel = np.ones((num_kernel, 5), np.uint8)
-        dilated = cv2.dilate(edged, kernel, iterations=2)
+    mask = np.zeros_like(edged)
 
-        kernel = cv2.getStructuringElement(cv2.MORPH_OPEN, (1, 2))
-        eroded = cv2.erode(dilated, kernel, iterations=1)
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        if h > w:
+            contour_mask = np.zeros_like(edged)
+            cv2.drawContours(contour_mask, [contour], -1, (255, 255, 255), thickness=cv2.FILLED)
+            kernel = np.array([[0, 0, 1, 0, 0],
+                               [0, 0, 1, 0, 0],
+                               [1, 1, 1, 1, 1],
+                               [1, 1, 1, 1, 1],
+                               [1, 1, 1, 1, 1],
+                               [1, 1, 1, 1, 1],
+                               [1, 1, 1, 1, 1],
+                               [1, 1, 1, 1, 1],
+                               [0, 0, 1, 0, 0],
+                               [0, 0, 1, 0, 0],], dtype=np.uint8)
 
+            dilated_mask = cv2.dilate(contour_mask, kernel, iterations=3)
+            mask = cv2.bitwise_or(mask, dilated_mask)
+
+    edged = cv2.bitwise_or(edged, mask)
+    # cv2.imshow('{edged}', edged)
+    dilated = edged.copy()
+    while True:
+        contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours_main = sorted(contours, key=cv2.contourArea, reverse=True)
+        total_area = sum(cv2.contourArea(contour) for contour in contours)
+        total_area_main = sum(cv2.contourArea(contour) for contour in contours_main[:2])
+        min_percentage = 0.8
+        if total_area_main / total_area > min_percentage:
+            break
+        else:
+            kernel = np.ones((5, 5), np.uint8)
+            dilated = cv2.dilate(dilated, kernel, iterations=2)
+            contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_OPEN, (1, 1))
+    eroded = cv2.erode(dilated, kernel, iterations=1)
+    # cv2.imshow('eroded', eroded)
+    # while True:
+    #     if cv2.waitKey(1) & 0xFF == ord('a'):
+    #         cv2.destroyAllWindows()
+    #         break
+
+
+    ############################################################
     contours, _ = cv2.findContours(eroded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     list_pos_num = []
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -111,27 +144,37 @@ def oxygen_meter(image_path):
         # print( x, y, w, h)
         list_pos_num += [(x, y, w, h)]
     list_pos_num = sorted(list_pos_num, key=lambda rect: rect[0] + rect[2])
-
+    canvas = image.copy()
     for x, y, w, h in list_pos_num:
         num += [edged_img(eroded, x, y, w, h, image)]
-    number = 0
-    if len(num) == 2:
-        number = str(num[0] * 10 + num[1])
-        return number
-    else:
-        number = 'error'
+        # cv2.rectangle(canvas, (x, y), (x+w, y+h), (0, 255, 0), thickness=2)
+        # cv2.imshow('canvas', canvas)
+        # while True:
+        #     if cv2.waitKey(1) & 0xFF == ord('a'):
+        #         cv2.destroyAllWindows()
+        #         break
+    number = num[0] * 10 + num[1]
+    return number
 
 
 def edged_img(eroded, X, Y, W, H, image):
     roi = eroded[Y: Y + H, X: X + W]
+    img = image[Y: Y + H, X: X + W]
     roi = cv2.resize(roi, (122 * 2, 170 * 2))
+    img = cv2.resize(img, (122 * 2, 170 * 2))
     h, w = roi.shape[0], roi.shape[1]
-
+    # cv2.imshow(f'region{w}-{h}', roi)
+    # cv2.waitKey(700)
+    # cv2.destroyAllWindows()
+    # while True:
+    #     if cv2.waitKey(1) & 0xFF == ord('a'):
+    #         cv2.destroyAllWindows()
+    #         break
 
     qW, qH = int(w * 0.25), int(h * 0.15)
     fractionH, halfH, fractionW = int(h * 0.08), int(h * 0.5), int(w * 0.3)
     sevensegs = [
-        ((0, 0), (w, qH)),  # a (top bar)
+        ((0 + int(qW * 0.6), 0), (w - int(qW * 0.6), qH)),  # a (top bar)
         ((w - qW, qH), (w, halfH)),  # b (upper right)
         ((w - qW - 10, halfH), (w - 10, h-qH)),  # c (lower right)
         ((0, h - qH), (w, h)),  # d (lower bar)
@@ -151,16 +194,26 @@ def edged_img(eroded, X, Y, W, H, image):
         # print(f'{i}:{(np.sum(region == 255))/(region.size * 0.5)}')
         if np.sum(region == 255) > region.size * 0.5:
             on[i] = 1
-
+    # cv2.imshow(f'{on}', canvas)
+    # cv2.waitKey(700)
+    # cv2.destroyAllWindows()
+    # while True:
+    #     if cv2.waitKey(1) & 0xFF == ord('a'):
+    #         cv2.destroyAllWindows()
+    #         break
+    print(on)
     if on not in DIGITSDICT_tuple:
         closest_tuple = find_closest_tuple(on, DIGITSDICT_tuple)
         index = DIGITSDICT_tuple.index(closest_tuple)
         on = DIGITSDICT_tuple[index]
     digit = DIGITSDICT[tuple(on)]
+
     if digit != 1:
         if w < 100:
             digit = 1
+    # print(f"Digits in img are: {digit}")
     return digit
+
 
 if __name__ == '__main__':
     folder_path = 'ori_img_10'
@@ -178,9 +231,7 @@ if __name__ == '__main__':
             print(f'Digits in img are: {number}, time run: {etime - stime}')
             print('##################################################')
             cv2.imshow(f'{number}-{name}', cv2.resize(cv2.imread(image_path), (500, 500)))
-            while True:
-                if cv2.waitKey(1) & 0xFF == ord('a'):
-                    cv2.destroyAllWindows()
-                    break
+            cv2.waitKey(700)
+            cv2.destroyAllWindows()
 
 
