@@ -1,11 +1,9 @@
-import os
 from utils.temp import temp
 from utils.gluco import roi_glu
 from utils.press import roi_press
 from utils.oxygen import oxygen_meter
 from flask import Flask, jsonify, request
 import werkzeug
-import subprocess
 
 # create vir env
 # subprocess.run(['pip', 'install', 'virtualenv'])

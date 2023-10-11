@@ -74,7 +74,7 @@ DIGITSDICT = {
 }
 
 
-def edged_img(cv_img, num_position=False, first_num=False):
+def edged_img(cv_img, num_position=False, first_num=False, first_num_3=False):
     num_channels = cv_img.shape[2]
     if num_channels > 1:
         try:
@@ -103,7 +103,7 @@ def edged_img(cv_img, num_position=False, first_num=False):
     # filtered_contours = [contour for contour in contours if cv2.contourArea(contour) >= 50]
     edged = np.zeros_like(roi)
     cv2.drawContours(edged, contours=filtered_contours, contourIdx=-1,
-                     color=255, thickness=cv2.FILLED)
+                     color=(255, 255, 255), thickness=cv2.FILLED)
 
     # cv2.imshow('new_edge', edged)
     # cv2.waitKey(10)
@@ -162,6 +162,29 @@ def edged_img(cv_img, num_position=False, first_num=False):
     #         cv2.destroyAllWindows()
     #         break
     ##################################################
+    if first_num_3:
+        contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour_max = 0
+        contour_cur = 0
+        for contour in contours:
+            try:
+                if cv2.contourArea(contour) >= cv2.contourArea(contour_cur):
+                    contour_max = contour
+                    contour_cur = contour_max
+            except:
+                contour_max = contour
+                contour_cur = contour_max
+        try:
+            (x, y, w, h) = cv2.boundingRect(contour_max)
+            print(w, h)
+        except:
+            print('digit in img are: [0]')
+            return 0
+        if h > 50:
+            if cv2.contourArea(contour_max) > 1000:
+                return 1
+        else:
+            return 0
     contours, _ = cv2.findContours(eroded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     digits_contours = []
     for contour in contours:
@@ -269,18 +292,21 @@ def roi_press(image_path):
     digit6_png = cv2.resize(digit6_png, None, None, fx=2, fy=1)
     num += [edged_img(digit6_png)]
     number += [num[0+3] * 100 + num[1+3] * 10 + num[2+3]]
-    digit7_png = crop_image(digit, 200, 295, 242, 379)
+    digit7_png = crop_image(digit, 170, 295, 198, 379)
     digit7_png = cv2.resize(digit7_png, (120, 130))
-    num += [edged_img(digit7_png, num_position=True)]
-    digit8_png = crop_image(digit, 245, 295, 287, 379)
+    num += [edged_img(digit7_png, num_position=True, first_num_3=True)]
+    digit8_png = crop_image(digit, 200, 295, 242, 379)
     digit8_png = cv2.resize(digit8_png, (120, 130))
     num += [edged_img(digit8_png, num_position=True)]
-    number += [num[6] * 10 + num[7]]
+    digit9_png = crop_image(digit, 245, 295, 287, 379)
+    digit9_png = cv2.resize(digit9_png, (120, 130))
+    num += [edged_img(digit9_png, num_position=True)]
+    number += [num[6] * 100 + num[7] * 10 + num[8]]
     print(number)
     return number
 
 if __name__ == '__main__':
-    folder_path = 'test_2_img'
+    folder_path = '../test_2_img'
     images = os.listdir(folder_path)
     print(images)
     for image in images:
